@@ -1,0 +1,7 @@
+dist/
+test_file.csv
+test_script.py
+/.pytest_cache
+/.venv
+/.vscode
+/.git

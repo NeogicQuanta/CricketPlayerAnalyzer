@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏏 Cricket Player Dashboard</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>🏏 Cricket Player Dashboard</h1>
+            <p>Enter any player ID to view comprehensive cricket statistics</p>
+        </header>
+        
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-title">Enter Player ID</div>
+            <div class="search-controls">
+                <input type="number" id="playerIdInput" class="search-input" placeholder="e.g., 253802 (Virat Kohli)" />
+                <button onclick="searchPlayer()" class="search-button">Search Player</button>
+            </div>
+            
+            <div class="examples">
+                <strong>Popular Players:</strong>
+                <span class="example-link" onclick="loadExample(253802)">253802 (Virat Kohli)</span>
+                <span class="example-link" onclick="loadExample(28081)">28081 (MS Dhoni)</span>
+                <span class="example-link" onclick="loadExample(35320)">35320 (Rohit Sharma)</span>
+                <span class="example-link" onclick="loadExample(290630)">290630 (Babar Azam)</span>
+            </div>
+        </section>
+        
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>🏏 Loading player data...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div class="error" id="error">
+            <div class="error-icon">❌</div>
+            <p id="errorMessage">Error loading player data</p>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <main class="dashboard-content" id="dashboardContent">
+            <!-- Player Info -->
+            <section class="player-info" id="playerInfo">
+                <div class="player-name" id="playerName">Player Statistics</div>
+                <div class="player-details">Player ID: <span id="playerId"></span></div>
+            </section>
+            
+            <!-- Statistics Cards -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🏏</div>
+                    <div class="stat-number" id="totalMatches">-</div>
+                    <div class="stat-label">Total Matches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏃</div>
+                    <div class="stat-number" id="totalRuns">-</div>
+                    <div class="stat-label">Total Runs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-number" id="highestScore">-</div>
+                    <div class="stat-label">Highest Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-number" id="battingAverage">-</div>
+                    <div class="stat-label">Batting Average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💯</div>
+                    <div class="stat-number" id="centuries">-</div>
+                    <div class="stat-label">Centuries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🤲</div>
+                    <div class="stat-number" id="catches">-</div>
+                    <div class="stat-label">Catches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎳</div>
+                    <div class="stat-number" id="wickets">-</div>
+                    <div class="stat-label">Wickets</div>
+                </div>
+            </section>
+            
+            <!-- Format Tabs -->
+            <nav class="format-tabs">
+                <button class="tab-button active" onclick="switchFormat('test')" id="testTab">
+                    <span class="tab-icon">🏏</span>
+                    Test Cricket
+                </button>
+                <button class="tab-button" onclick="switchFormat('odi')" id="odiTab">
+                    <span class="tab-icon">⚡</span>
+                    ODI Cricket
+                </button>
+                <button class="tab-button" onclick="switchFormat('t20')" id="t20Tab">
+                    <span class="tab-icon">🚀</span>
+                    T20I Cricket
+                </button>
+            </nav>
+            
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Runs Against Different Teams</h3>
+                    <canvas id="teamsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Performance Distribution</h3>
+                    <canvas id="runsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Batting Average by Opposition</h3>
+                    <canvas id="averageChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Centuries vs Teams</h3>
+                    <canvas id="centuriesChart"></canvas>
+                </div>
+            </section>
+            
+            <!-- Data Table Section -->
+            <section class="data-table-section">
+                <h2 class="section-title">Detailed Team-wise Statistics</h2>
+                <div class="table-container">
+                    <table id="statsTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Opposition</th>
+                                <th>Matches</th>
+                                <th>Runs</th>
+                                <th>Batting Avg</th>
+                                <th>Highest Score</th>
+                                <th>Centuries</th>
+                                <th>Wickets</th>
+                                <th>Bowling Avg</th>
+                                <th>Catches</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Cricket Dashboard - Powered by ESP CricInfo Data</p>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
