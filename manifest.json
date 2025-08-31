@@ -1,0 +1,12 @@
+{
+    "name": "Cricket Player Analysis",
+    "version": "1.0.0",
+    "description": "Analyzes Cricket Players Performance",
+    "manifest_version": 3,
+    "author": "Isha Agrawal",
+    "action":{
+        "default_popup": "index.html",
+        "default_icon": "icon.png",
+        "default_title": "Latest Cricket Match Report"
+    }
+}
